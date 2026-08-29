@@ -1,0 +1,2 @@
+create or replace function public.employee_login(p_employee_no text,p_pin text) returns table(id bigint,employee_no text,name text,department text) language sql security definer set search_path=public as $$ select e.id,e.employee_no,e.name,e.department from public.employees e where e.employee_no=p_employee_no and e.pin=p_pin and e.active=true limit 1; $$;
+grant execute on function public.employee_login(text,text) to anon,authenticated;
