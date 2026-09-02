@@ -1,1 +1,195 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Consarck Meal Ordering</title><link rel="stylesheet" href="style.css"></head><body><header><h1>Consarck Pvt Ltd</h1><p>Employee Meal Ordering</p></header><main><section id="login" class="card"><h2>Login</h2><button onclick="mode('employee')">Employee Login</button><button onclick="mode('admin')" class="dark">Admin Login</button><div id="employeeLogin"><input id="empNo" placeholder="Employee No"><input id="pin" type="password" placeholder="PIN"><button onclick="employeeLogin()">Login</button></div><div id="adminLogin" class="hidden"><input id="email" type="email" placeholder="Admin email"><input id="password" type="password" placeholder="Password"><button onclick="adminLogin()">Login</button></div><p id="msg"></p></section><section id="employeePanel" class="card hidden"><h2>Meal Order</h2><p><b id="ename"></b> — <span id="eno"></span></p><input id="date" type="date"><div class="grid"><label><input id="b" type="checkbox"> Breakfast</label><label><input id="l" type="checkbox"> Lunch</label><label><input id="d" type="checkbox"> Dinner</label></div><input id="qty" type="number" min="1" value="1"><div class="grid2"><label><input name="delivery" type="radio" value="true" checked> Need Delivery</label><label><input name="delivery" type="radio" value="false"> Not Delivery</label></div><button onclick="submitOrder()">Submit Order</button><button onclick="myOrders()" class="dark">My Orders</button><button onclick="logout()" class="dark">Logout</button><p id="orderMsg"></p><div id="history"></div></section><section id="adminPanel" class="card hidden"><h2>Admin Dashboard</h2><input id="adminDate" type="date" onchange="dashboard()"><button onclick="dashboard()">Refresh</button><div id="summary" class="summary"></div><div id="orders"></div><h3>Employees</h3><div id="employeeList"></div><button onclick="logout()" class="dark">Logout</button></section></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Consarck Meal Ordering System</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7f5;
+      color: #222;
+    }
+
+    .header {
+      background: #176b3a;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 25px;
+    }
+
+    .header p {
+      margin: 6px 0 0;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 30px auto;
+      padding: 15px;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      margin-bottom: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,.08);
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #176b3a;
+    }
+
+    label {
+      display: block;
+      margin-top: 12px;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 18px;
+      border: none;
+      border-radius: 8px;
+      background: #176b3a;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0f512b;
+    }
+
+    .admin-btn {
+      background: #333;
+    }
+
+    .message {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .employee {
+      border-top: 1px solid #ddd;
+      margin-top: 25px;
+      padding-top: 25px;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 20px;
+      color: #777;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <h1>🍛 Consarck Meal Ordering</h1>
+    <p>Consarck Pvt Ltd</p>
+    <p>Kuliyapitiya, Weralugama</p>
+  </div>
+
+  <div class="container">
+
+    <!-- ADMIN LOGIN -->
+    <div class="card">
+      <h2>🔐 Admin Login</h2>
+
+      <label>Email</label>
+      <input
+        type="email"
+        id="adminEmail"
+        placeholder="Admin email"
+      >
+
+      <label>Password</label>
+      <input
+        type="password"
+        id="adminPassword"
+        placeholder="Password"
+      >
+
+      <button
+        class="admin-btn"
+        onclick="adminLogin()">
+        Admin Login
+      </button>
+
+      <div id="adminMessage" class="message"></div>
+    </div>
+
+
+    <!-- EMPLOYEE LOGIN -->
+    <div class="card employee">
+
+      <h2>👤 Employee Login</h2>
+
+      <label>EMP No</label>
+      <input
+        type="text"
+        id="employeeNo"
+        placeholder="Example: EMP001"
+      >
+
+      <label>PIN</label>
+      <input
+        type="password"
+        id="employeePin"
+        placeholder="Enter PIN"
+      >
+
+      <button onclick="employeeLogin()">
+        Employee Login
+      </button>
+
+      <div id="employeeMessage" class="message"></div>
+
+    </div>
+
+  </div>
+
+  <div class="footer">
+    Consarck Pvt Ltd © 2026
+  </div>
+
+
+  <!-- Configuration -->
+  <script src="config.js"></script>
+
+  <!-- Main application -->
+  <script src="app.js"></script>
+
+</body>
+</html>
